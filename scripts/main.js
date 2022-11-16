@@ -174,6 +174,15 @@ var game = {
                 }
             }
         }
+    },
+
+    swapTwo: function(pos1, pos2) {
+        var p1 = this.pieces[pos1.x][pos1.y];
+        var p2 = this.pieces[pos2.x][pos2.y];
+        this.pieces[pos1.x][pos1.y] = p2;
+        p2.moveTo(pos1.x, pos1.y, this.pcsSize);
+        this.pieces[pos2.x][pos2.y] = p1;
+        p1.moveTo(pos2.x, pos2.y, this.pcsSize);
     }
 
     // To generate a puzzle randomly
@@ -188,9 +197,7 @@ function Piece(idx, posX, posY, pcsSize) {
 
     this.elem = document.createElement("div");
     this.elem.classList.add("piece");
-    if (idx === 0) {
-        this.elem.id = "blank";
-    }
+    this.elem.id = "idx" + idx;
 
     
     // Set element size and position
@@ -201,30 +208,39 @@ function Piece(idx, posX, posY, pcsSize) {
     var node = document.createTextNode(idx);
     this.elem.appendChild(node);
 
+    this.elem.addEventListener("mousedown", moveHandler, false);
+
     game.puzzle.appendChild(this.elem);
 }
 
 Piece.prototype = {
     constructor : Piece,
 
-    // move: function(dir) {
-    //     var newPos = Game.tetromino.calculate(dir);
-    //     if (Game.check(newPos)) {
-    //         for (var i = 0; i < 4; i++) {
-    //             Game.tetromino.blocks[i].style.top = newPos[i].top + "px";
-    //             Game.tetromino.blocks[i].style.left = newPos[i].left + "px";
-    //         }
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
+    moveTo: function(x, y, pcsSize) {
+        this.elem.style.top = x * pcsSize + "px";
+        this.elem.style.left = y * pcsSize + "px";
+    }
+};
+
+var moveHandler = function() {
+    var currIdx = parseInt(this.id.slice(3));
+    if (currIdx) { // Not blank
+        var currPos = locateNum(currIdx, game.sequence, game.size);
+        var blankPos = locateNum(0, game.sequence, game.size);
+        
+        var d = Math.abs(currPos.x-blankPos.x) + Math.abs(currPos.y-blankPos.y);
+        if (d === 1) { // Able to move
+            game.swapTwo(currPos, blankPos);
+
+            game.sequence[currPos.x*game.size + currPos.y] = 0;
+            game.sequence[blankPos.x*game.size + blankPos.y] = currIdx;
+        }
+    }
+
 };
 
 window.addEventListener("load", function() {
     game.puzzle = document.getElementById("puzzle");
-    // game.puzzle.parentNode.style.top = game.puzzle.parentNode.offsetTop + "px";
-    // game.puzzle.parentNode.style.left = game.puzzle.parentNode.offsetLeft + "px";
 
     game.prepareGame();
 }, false);
