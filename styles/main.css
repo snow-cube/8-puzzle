@@ -23,7 +23,7 @@
   margin: 0;
   width: 510px;
   height: 510px;
-  background-color: aquamarine;
+  background-color: aliceblue;
 }
 
 .piece {
@@ -37,10 +37,17 @@
   /* border-style: solid; */
   /* border-color: white; */
   /* border-width: 5px; */
+  transition-property: top, left;
+  transition-duration: 130ms;
+  transition-timing-function: ease;
+  z-index: 2;
 }
 
 #idx0 {
   background-color: aliceblue;
+  transition-property: none;
+  transition-duration: 0;
+  z-index: 1;
 }
 
 #controller {

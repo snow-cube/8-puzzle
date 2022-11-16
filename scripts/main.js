@@ -53,36 +53,20 @@ function locateNum(num, sequence, size) {
     return calculatePos(idx, size);
 }
 
-function generate(sequence, left, size) {
-    var range = size * size;
-    if (sequence.length === range - 2) { // 2 nums left, so need to decide order
+function generate(sequence, left, range) {
+    if (sequence.length === range - 1) {
         sequence[sequence.length] = left[0];
-        sequence[sequence.length] = left[1];
-        var inverse = inverseNum(sequence);
-        var accessible = false;
-        if (size % 2) {
-            accessible = inverse % 2 === 0;
-        } else {
-            var distance = size - 1 - locateNum(0, sequence, size).x;
-            accessible = (inverse % 2 === 0) === (distance % 2 === 0);
-        }
-        
-        if (!accessible) {
-            var len = sequence.length;
-            sequence[len-2] = left[1];
-            sequence[len-1] = left[0];
-        }
     } else {
         var rSelect = Math.floor(Math.random() * left.length);
         sequence[sequence.length] = left[rSelect];
         left.splice(rSelect, 1);
-        generate(sequence, left, size);
+        generate(sequence, left, range);
     }
 }
 
 // Basic game object, which store kinds of info of game
 var game = {
-    size: 3, // size * size puzzle
+    size: 5, // size * size puzzle
     pcsSize: 0, // Pixel size of single piece
 
     imageList: ["default.png"],
@@ -103,16 +87,10 @@ var game = {
                 this.pieces[i][j] = null;
             }
         }
-        this.pieces = [];
+        this.pieces.length = 0;
+        this.sequence.length = 0;
 
-        // Logic part: generate new game
-        // var left = Array(this.size * this.size);
-        // for (var i = 0; i < left.length; i++) {
-        //     left[i] = i;
-        // }
-        // generate(this.sequence, left, this.size);
-        this.sequence = [1, 2, 3, 4, 5, 6, 7, 8, 0];
-        // window.alert(this.sequence);
+        this.generateSequence();
 
         this.getPcsSize();
 
@@ -183,12 +161,33 @@ var game = {
         p2.moveTo(pos1.x, pos1.y, this.pcsSize);
         this.pieces[pos2.x][pos2.y] = p1;
         p1.moveTo(pos2.x, pos2.y, this.pcsSize);
-    }
+    },
 
     // To generate a puzzle randomly
-    // generateSequence: function() {
-        
-    // }
+    generateSequence: function() {
+        var accessible = false;
+        var cnt = 0;
+        while (!accessible) {
+            this.sequence.length = 0;
+            var left = Array(this.size * this.size);
+            for (var i = 0; i < left.length; i++) {
+                left[i] = i;
+            }
+            generate(this.sequence, left, this.size*this.size);
+            var inverse = inverseNum(this.sequence);
+            if (this.size % 2) {
+                accessible = inverse % 2 === 0;
+            } else {
+                var dist = this.size-1-locateNum(0, this.sequence, this.size).x;
+                accessible = (inverse % 2 === 0) === (dist % 2 === 0);
+            }
+            cnt++;
+        }
+        // this.sequence = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+        console.log(cnt);
+        console.log(this.sequence);
+        console.log(inverse);
+    }
 };
 
 // Piece constructor
