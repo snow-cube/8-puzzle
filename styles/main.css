@@ -1,9 +1,13 @@
 #main-area {
   position: fixed;
   margin: 0;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  /* top: 37px;
+  left: 27px; */
+  top: calc(50% - 255px);
+  left: calc(50% - 350px);
+  /* top: 50%; */
+  /* left: 50%; */
+  /* transform: translate(-50%, -50%); */
   width: 700px;
   height: 510px;
 
@@ -12,9 +16,9 @@
 
 #puzzle {
   position: absolute;
-  top: 50%;
+  top: 0;
   right: 0;
-  transform: translate(0, -50%);
+  /* transform: translate(0, -50%); */
 
   margin: 0;
   width: 510px;
@@ -29,8 +33,14 @@
   margin: 0;
   padding: 0;
   background-color: violet;
-  border-style: none;
-  border-width: 0;
+  background-size: 510px;
+  /* border-style: solid; */
+  /* border-color: white; */
+  /* border-width: 5px; */
+}
+
+#blank {
+  background-color: aliceblue;
 }
 
 #controller {
@@ -49,14 +59,17 @@
   #main-area {
     width: 510px;
     height: 720px;
+    top: calc(50% - 360px);
+    left: calc(50% - 255px);
   }
   
   #puzzle {
-    left: 50%;
+    /* left: 50%; */
+    left: 0;
     bottom: 0;
     top: auto;
     right: auto;
-    transform: translate(-50%, 0);
+    /* transform: translate(-50%, 0); */
   }
 
   #controller {
@@ -71,37 +84,22 @@
 
 @media screen and (max-width: 540px) {
   #main-area {
-    position: fixed;
-    margin: 0;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 700px;
+    width: 300px;
     height: 510px;
-  
-    background-color: gainsboro;
+    top: calc(50% - 255px);
+    left: calc(50% - 150px);
   }
   
   #puzzle {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translate(0, -50%);
-  
-    margin: 0;
-    width: 510px;
-    height: 510px;
-    background-color: aquamarine;
+    width: 300px;
+    height: 300px;
+  }
+
+  .piece {
+    background-size: 300px;
   }
 
   #controller {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translate(0, -50%);
-    margin: 0;
     width: 190px;
-    height: 10em;
-    background-color: coral;
   }
 }
