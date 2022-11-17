@@ -66,7 +66,7 @@ function generate(sequence, left, range) {
 
 // Basic game object, which store kinds of info of game
 var game = {
-    size: 3, // size * size puzzle
+    size: 4, // size * size puzzle
     pcsSize: 0, // Pixel size of single piece
 
     imageList: ["default.png"],
@@ -226,120 +226,124 @@ var moveHandler = function() {
 
 };
 
-
-// Store state of every step
-function State(seq, step, history, size) {
-    this.seq = seq;
-    this.step = step;
-    this.history = history;
-    this.size = size;
-}
-
-State.prototype = {
-    constructor : State,
-
-    // Amount of differences, meanwhile update cost
-    cntDiff: function() {
-        var cnt = 0;
-        for (var i = 0; i < this.size * this.size; i++) {
-            if (this.seq[i] !== (i+1) % (this.size*this.size)) {
-                cnt++;
+var ai = {
+    dir: [[1, 0], [0, -1], [0, 1], [-1, 0]],
+    size: 0,
+    r: 0, // size * size
+    tab: [], // current position
+    tPos: [], // target position of each number
+    his: [], // history
+    ans: 1000,
+    max: 60,
+    getTab: function() {
+        for (var i = 0; i < this.size; i++) {
+            this.tab[i] = [];
+            for (var j = 0; j < this.size; j++) {
+                this.tab[i][j] = game.sequence[i*this.size + j];
             }
         }
-        this.diff = cnt;
-        this.cost = this.step + cnt;
-        return cnt;
+    },
+    getTPos: function() {
+        this.tPos.length = 0;
+        for (var i = 0; i < this.r; i++) {
+            var ib0 = (i+this.r-1) % this.r;
+            this.tPos[i] = {};
+            this.tPos[i].x = parseInt(ib0 / this.size);
+            this.tPos[i].y = ib0 % this.size;
+        }
     },
 
-    // toStr: function() {
-    //     var str = "";
-    //     for (var i = 0; i < this.size * this.size; i++) {
-    //         str += ;
-    //     }
-    //     return num.
-    // }
-};
-
-function bfs(dir) {
-    
-    var q = new PriorityQueue(function(a, b) {
-        return a.cost - b.cost;
-    });
-    var tried = new Map();
-
-    var history = [];
-    var start = new State(game.sequence.concat(), 0, history, game.size);
-    if (start.cntDiff() === 0) {
-        return start;
-    }
-    q.push(start);
-    tried.set(start.seq.toString(), true);
-    var c = 0;
-    while (q.data.length) {
-        console.log(c++);
-        var top = q.front();
-        pos = locateNum(0, top.seq, top.size);
+    dfs: function(x, y, s, l, limit, last) {
+        if (l + s > limit) return;
+        if (s === 0) {
+            this.ans = l;
+            return;
+        }
+        
         for (var i = 0; i < 4; i++) {
-            var newPos = {};
-            newPos.x = pos.x + dir[i][0];
-            newPos.y = pos.y + dir[i][1];
-            if (newPos.x >= 0 && newPos.x < top.size &&
-                newPos.y >= 0 && newPos.y < top.size) {
-                idx = pos.x * top.size + pos.y;
-                newIdx = newPos.x * top.size + newPos.y;
-                var newSeq = top.seq.concat();
-                newSeq[idx] = top.seq[newIdx];
-                newSeq[newIdx] = top.seq[idx];
-                var newHis = top.history.concat();
-                newHis[newHis.length] = i;
-                var newSta = new State(newSeq, top.step+1, newHis, top.size);
-                
-                if (newSta.cntDiff() === 0) {
-                    return newSta;
+            if (last + i === 3) continue; // back to last position
+            var nx = x + this.dir[i][0];
+            var ny = y + this.dir[i][1];
+            if (nx < 0 || nx >= this.size || ny < 0 || ny >= this.size) {
+                continue;
+            }
+
+            var ns = s, k = this.tab[nx][ny]; // the number that will exchange
+            ns += Math.abs(this.tPos[k].x - x);
+            ns += Math.abs(this.tPos[k].y - y);
+
+            ns -= Math.abs(this.tPos[k].x - nx);
+            ns -= Math.abs(this.tPos[k].y - ny);
+
+            this.his[l] = i;
+            var t = this.tab[nx][ny];
+            this.tab[nx][ny] = this.tab[x][y];
+            this.tab[x][y] = t;
+            this.dfs(nx, ny, ns, l+1, limit, i);
+            if (this.ans !== 1000) return;
+            t = this.tab[nx][ny];
+            this.tab[nx][ny] = this.tab[x][y];
+            this.tab[x][y] = t;
+        }
+    },
+
+    sovle: function(size) {
+        this.size = size;
+        this.r = size * size;
+        this.ans = 1000;
+        this.his.length = 0;
+
+        this.getTab();
+        this.getTPos();
+
+        var sum = 0, x0, y0;
+        for (var i = 0; i < this.size; i++) {
+            for (var j = 0; j < this.size; j++) {
+                var tN = (i * this.size + j + 1) % this.r;
+                if (this.tab[i][j] === tN || this.tab[i][j] === 0) {
+                    if (this.tab[i][j] === 0) {
+                        x0 = i;
+                        y0 = j;
+                    }
+                    continue;
                 }
-                
-                if (tried.get(newSta.seq.toString()) !== true) {
-                    q.push(newSta);
-                    tried.set(newSta.seq.toString(), true);
-                }
+                var k = this.tab[i][j];
+                sum += Math.abs(this.tPos[k].x - i);
+                sum += Math.abs(this.tPos[k].y - j);
             }
         }
-    }
-}
 
+        for (var i = sum; i <= this.max; i++) {
+            this.dfs(x0, y0, sum, 0, i, 4);
+            if (this.ans !== 1000) break;
+        }
+    }
+};
 
 var AISovleHandler = function() {
-    var dir = [[0, -1], [0, 1], [1, 0], [-1, 0]]; // 4 directions
-    solution = bfs(dir);
-    
-    if (solution.step) {
-        console.log(solution.seq);
-        console.log(solution.step);
-        console.log(solution.history);
-        // console.log(game.sequence);
-        var num = 0, max = solution.step;
-        // var num = 0, max, solution;
+    ai.sovle(game.size);
+    if (ai.ans === 0) {
+        console.log("already done!");
+    } else if (ai.ans === 1000) {
+        console.log("Oops!");
+    } else {
+        console.log(ai.his);
+        var callCnt = 0, times = ai.ans;
         var callStep = () => {
-            if (num < max) {
-                var blankPos = locateNum(0, game.sequence, game.size);
-                var targetPos = {};
-                targetPos.x = blankPos.x + dir[solution.history[num]][0];
-                targetPos.y = blankPos.y + dir[solution.history[num]][1];
-                // targetPos.x = blankPos.x;
-                // targetPos.y = blankPos.y;
-                game.swapTwo(blankPos, targetPos);
-                var t = game.sequence[targetPos.x*game.size + targetPos.y];
-                game.sequence[blankPos.x*game.size + blankPos.y] = t;
-                game.sequence[targetPos.x*game.size + targetPos.y] = 0;
-                num++;
+            if (callCnt < times) {
+                var pos1 = locateNum(0, game.sequence, game.size);
+                var pos2 = {};
+                pos2.x = pos1.x + ai.dir[ai.his[callCnt]][0];
+                pos2.y = pos1.y + ai.dir[ai.his[callCnt]][1];
+                game.swapTwo(pos1, pos2);
+                var t = game.sequence[pos2.x*game.size + pos2.y];
+                game.sequence[pos1.x*game.size + pos1.y] = t;
+                game.sequence[pos2.x*game.size + pos2.y] = 0;
+                callCnt++;
                 setTimeout(callStep, 500);
             }
         };
-
-        
         setTimeout(callStep, 500);
-
-        // game.sequence = solution.seq.concat();
     }
 };
 
@@ -350,16 +354,4 @@ window.addEventListener("load", function() {
 
     var btnAI = this.document.getElementById("ai");
     btnAI.addEventListener("click", AISovleHandler, false);
-
-    var q1 = new PriorityQueue(function(a, b) {
-        return a - b;
-    });
-    // q1.push(3);
-    // q1.push(1);
-    // q1.push(2);
-    // q1.push(2);
-    // q1.push(4);
-    // console.log(q1.data);
-    // console.log(q1.front());
-    // console.log(q1.data);
 }, false);
