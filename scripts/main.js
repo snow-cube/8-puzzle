@@ -66,7 +66,7 @@ function generate(sequence, left, range) {
 
 // Basic game object, which store kinds of info of game
 var game = {
-    size: 5, // size * size puzzle
+    size: 3, // size * size puzzle
     pcsSize: 0, // Pixel size of single piece
 
     imageList: ["default.png"],
@@ -103,27 +103,6 @@ var game = {
         }
 
         this.setImages(this.currImage);
-
-        // for (var i = 0; i < 8; i++) {
-        //     game.blocks[i] = [];
-        //     for (var j = 0; j < 4; j++) {
-        //         var elem = document.createElement("div");
-        //         game.blocks[i][j] = elem;
-
-        //         elem.classList.add("block");
-        //         elem.style.left = j * 25 + "vw";
-        //         if (j === 0) {
-        //             elem.style.borderLeft = "none";
-        //         }
-        //         if (i < 4) {
-        //             elem.style.bottom = i * 25 + "vh";
-        //             game.board_1.appendChild(elem);
-        //         } else {
-        //             elem.style.bottom = (i - 4) * 25 + "vh";
-        //             game.board_2.appendChild(elem);
-        //         }
-        //     }
-        // }
     },
 
     // Calculate size of piece by size of whole puzzle
@@ -187,6 +166,15 @@ var game = {
         console.log(cnt);
         console.log(this.sequence);
         console.log(inverse);
+    },
+
+    isSuccessful: function() {
+        for (var i = 0; i < this.size * this.size - 1; i++) {
+            if (self.sequence[i] !== i + 1) {
+                return false;
+            }
+        }
+        return true;
     }
 };
 
@@ -238,8 +226,140 @@ var moveHandler = function() {
 
 };
 
+
+// Store state of every step
+function State(seq, step, history, size) {
+    this.seq = seq;
+    this.step = step;
+    this.history = history;
+    this.size = size;
+}
+
+State.prototype = {
+    constructor : State,
+
+    // Amount of differences, meanwhile update cost
+    cntDiff: function() {
+        var cnt = 0;
+        for (var i = 0; i < this.size * this.size; i++) {
+            if (this.seq[i] !== (i+1) % (this.size*this.size)) {
+                cnt++;
+            }
+        }
+        this.diff = cnt;
+        this.cost = this.step + cnt;
+        return cnt;
+    },
+
+    // toStr: function() {
+    //     var str = "";
+    //     for (var i = 0; i < this.size * this.size; i++) {
+    //         str += ;
+    //     }
+    //     return num.
+    // }
+};
+
+function bfs(dir) {
+    
+    var q = new PriorityQueue(function(a, b) {
+        return a.cost - b.cost;
+    });
+    var tried = new Map();
+
+    var history = [];
+    var start = new State(game.sequence.concat(), 0, history, game.size);
+    if (start.cntDiff() === 0) {
+        return start;
+    }
+    q.push(start);
+    tried.set(start.seq.toString(), true);
+    var c = 0;
+    while (q.data.length) {
+        console.log(c++);
+        var top = q.front();
+        pos = locateNum(0, top.seq, top.size);
+        for (var i = 0; i < 4; i++) {
+            var newPos = {};
+            newPos.x = pos.x + dir[i][0];
+            newPos.y = pos.y + dir[i][1];
+            if (newPos.x >= 0 && newPos.x < top.size &&
+                newPos.y >= 0 && newPos.y < top.size) {
+                idx = pos.x * top.size + pos.y;
+                newIdx = newPos.x * top.size + newPos.y;
+                var newSeq = top.seq.concat();
+                newSeq[idx] = top.seq[newIdx];
+                newSeq[newIdx] = top.seq[idx];
+                var newHis = top.history.concat();
+                newHis[newHis.length] = i;
+                var newSta = new State(newSeq, top.step+1, newHis, top.size);
+                
+                if (newSta.cntDiff() === 0) {
+                    return newSta;
+                }
+                
+                if (tried.get(newSta.seq.toString()) !== true) {
+                    q.push(newSta);
+                    tried.set(newSta.seq.toString(), true);
+                }
+            }
+        }
+    }
+}
+
+
+var AISovleHandler = function() {
+    var dir = [[0, -1], [0, 1], [1, 0], [-1, 0]]; // 4 directions
+    solution = bfs(dir);
+    
+    if (solution.step) {
+        console.log(solution.seq);
+        console.log(solution.step);
+        console.log(solution.history);
+        // console.log(game.sequence);
+        var num = 0, max = solution.step;
+        // var num = 0, max, solution;
+        var callStep = () => {
+            if (num < max) {
+                var blankPos = locateNum(0, game.sequence, game.size);
+                var targetPos = {};
+                targetPos.x = blankPos.x + dir[solution.history[num]][0];
+                targetPos.y = blankPos.y + dir[solution.history[num]][1];
+                // targetPos.x = blankPos.x;
+                // targetPos.y = blankPos.y;
+                game.swapTwo(blankPos, targetPos);
+                var t = game.sequence[targetPos.x*game.size + targetPos.y];
+                game.sequence[blankPos.x*game.size + blankPos.y] = t;
+                game.sequence[targetPos.x*game.size + targetPos.y] = 0;
+                num++;
+                setTimeout(callStep, 500);
+            }
+        };
+
+        
+        setTimeout(callStep, 500);
+
+        // game.sequence = solution.seq.concat();
+    }
+};
+
 window.addEventListener("load", function() {
     game.puzzle = document.getElementById("puzzle");
 
     game.prepareGame();
+
+    var btnAI = this.document.getElementById("ai");
+    btnAI.addEventListener("click", AISovleHandler, false);
+
+    var q1 = new PriorityQueue(function(a, b) {
+        return a - b;
+    });
+    // q1.push(3);
+    // q1.push(1);
+    // q1.push(2);
+    // q1.push(2);
+    // q1.push(4);
+    // console.log(q1.data);
+    // console.log(q1.front());
+    // console.log(q1.data);
 }, false);
