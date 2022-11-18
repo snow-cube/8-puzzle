@@ -69,7 +69,7 @@ var game = {
     size: 4, // size * size puzzle
     pcsSize: 0, // Pixel size of single piece
 
-    imageList: ["default.png"],
+    imageList: ["1.jpg"],
     imageDir: "./imgs/images/",
     currImage: 0,
 
@@ -163,9 +163,9 @@ var game = {
             cnt++;
         }
         // this.sequence = [1, 2, 3, 4, 5, 6, 7, 8, 0];
-        console.log(cnt);
-        console.log(this.sequence);
-        console.log(inverse);
+        console.log(`Trial(s): ${cnt}`);
+        console.log(`Result sequence: ${this.sequence}`);
+        console.log(`Inverse: ${inverse}`);
     },
 
     isSuccessful: function() {
@@ -192,8 +192,8 @@ function Piece(idx, posX, posY, pcsSize) {
     this.elem.style.height = pcsSize + "px";
     this.elem.style.top = posX * pcsSize + "px";
     this.elem.style.left = posY * pcsSize + "px";
-    var node = document.createTextNode(idx);
-    this.elem.appendChild(node);
+    // var node = document.createTextNode(idx);
+    // this.elem.appendChild(node);
 
     this.elem.addEventListener("mousedown", moveHandler, false);
 
@@ -314,6 +314,7 @@ var ai = {
         }
 
         for (var i = sum; i <= this.max; i++) {
+            // console.log(i);
             this.dfs(x0, y0, sum, 0, i, 4);
             if (this.ans !== 1000) break;
         }
@@ -321,13 +322,22 @@ var ai = {
 };
 
 var AISovleHandler = function() {
+    var start = new Date();
     ai.sovle(game.size);
+    var end = new Date();
+    console.log("---- AI Solving ----");
+    console.log(`Steps: ${ai.his}`);
+    console.log(`Start time: ${start.toLocaleTimeString()}`);
+    console.log(`End time: ${end.toLocaleTimeString()}`);
+    console.log(`${end - start}ms used`);
+    console.log("--------------------");
+
     if (ai.ans === 0) {
-        console.log("already done!");
+        console.log("Already Finished!");
     } else if (ai.ans === 1000) {
-        console.log("Oops!");
+        console.log(`More than ${ai.max} steps!`);
     } else {
-        console.log(ai.his);
+        // console.log(ai.his);
         var callCnt = 0, times = ai.ans;
         var callStep = () => {
             if (callCnt < times) {
