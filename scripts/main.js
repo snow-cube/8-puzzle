@@ -69,9 +69,8 @@ var game = {
     size: 4, // size * size puzzle
     pcsSize: 0, // Pixel size of single piece
 
-    imageList: ["1.jpg"],
-    imageDir: "./imgs/images/",
-    currImage: 0,
+    defaultImg: "./imgs/images/d4.png",
+    currentImg: "./imgs/images/d4.png",
 
     puzzle: {}, // element
     pieces: [], // Store objests, which have elem properties
@@ -102,7 +101,9 @@ var game = {
             }
         }
 
-        this.setImages(this.currImage);
+        this.setImages();
+        var idx0 = document.getElementById("idx0");
+        idx0.style.backgroundImage = "none";
     },
 
     // Calculate size of piece by size of whole puzzle
@@ -111,9 +112,9 @@ var game = {
     },
 
     // Set or Update all the background images
-    setImages: function(code) {
-        this.currImage = code;
-        var url = `url(${this.imageDir}${this.imageList[code]})`;
+    setImages: function() {
+        var url = `url('${this.currentImg}')`;
+        // var url = `url(${this.imageDir}${this.imageList[code]})`;
         for (var i = 0; i < this.size; i++) {
             for (var j = 0; j < this.size; j++) {
                 var piece = this.pieces[i][j];
@@ -122,13 +123,16 @@ var game = {
                 var n = this.size * this.size;
                 var idxB0 = (piece.idx - 1 + n) % n;
                 var pos = calculatePos(idxB0, this.size);
-                elem.style.backgroundImage = url;
+                var a = elem.style.backgroundImage;
+                if (piece.idx !== 0 || a !== "none") {
+                    elem.style.backgroundImage = url;
+                }
                 elem.style.backgroundPositionX = -pos.y*this.pcsSize + "px";
                 elem.style.backgroundPositionY = -pos.x*this.pcsSize + "px";
 
-                if (piece.idx === 0) {
-                    elem.style.backgroundImage = "none";
-                }
+                // if (piece.idx === 0) {
+                    // elem.style.backgroundImage = "none";
+                // }
             }
         }
     },
@@ -351,6 +355,9 @@ var AISovleHandler = function() {
                 game.sequence[pos2.x*game.size + pos2.y] = 0;
                 callCnt++;
                 setTimeout(callStep, 500);
+            } else {
+                var idx0 = document.getElementById("idx0");
+                idx0.style.backgroundImage = `url('${game.currentImg}')`;
             }
         };
         setTimeout(callStep, 500);
@@ -364,4 +371,25 @@ window.addEventListener("load", function() {
 
     var btnAI = this.document.getElementById("ai");
     btnAI.addEventListener("click", AISovleHandler, false);
+
+    var gOpen = this.document.getElementById("images");
+    gOpen.addEventListener("click", function() {
+        var gallery = document.getElementById("gallery");
+        gallery.classList.remove("close");
+    }, false);
+
+    var gClose = this.document.getElementById("gallery-close");
+    gClose.addEventListener("click", function() {
+        this.parentNode.classList.add("close");
+    }, false);
+
+    var imgs = this.document.getElementsByClassName("img-items");
+    for (var i = 0; i < imgs.length; i++) {
+        imgs[i].addEventListener("click", function() {
+            game.currentImg = this.getAttribute("src");
+            game.setImages();
+            var gallery = document.getElementById("gallery");
+            gallery.classList.add("close");
+        }, false);
+    }
 }, false);

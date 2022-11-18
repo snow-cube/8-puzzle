@@ -145,7 +145,7 @@
   display: none;
 }
 
-#close {
+#success-close {
   display: block;
   /* position: absolute; */
   margin: 0 auto;
@@ -157,10 +157,69 @@
   height: 80px;
 }
 
-#close img {
+#success-close img {
   display: block;
   /* position: absolute; */
   height: 80px;
+}
+
+#gallery {
+  position: fixed;
+  width: 640px;
+  height: 80%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 30px;
+  background-color: yellowgreen;
+}
+
+h1 {
+  font-size: 2em;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+h2 {
+  display: inline;
+  font-size: 1em;
+}
+
+.folders {
+  list-style: square inside url("../imgs/icons/r.svg");
+  margin: 0;
+  padding: 0;
+  height: 90%;
+  overflow: auto;
+}
+
+.img-items {
+  display: inline-block;
+  /* float: left; */
+  margin: 15px 8px;
+  width: 130px;
+  /* height: 150px; */
+}
+
+#gallery-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  padding: 0;
+  /* width: 40px; */
+  /* height: 40px; */
+  border: none;
+  background-color: blueviolet;
+}
+
+#gallery-close img {
+  display: block;
+  margin: 10px;
+  width: 20px;
+}
+
+.close {
+  display: none;
 }
 
 /* 响应式布局 - 当屏幕的宽度小于 800 像素时，使两列堆叠而不是并排 */
