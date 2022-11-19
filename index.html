@@ -12,34 +12,27 @@
     <div id="main-area">
       <div id="puzzle"></div>
       <div id="controller">
-        <button type="button" id="ai">AI</button>
-        <button type="button" id="images">Images</button>
+        <button type="button" id="new">新游戏</button>
+        <button type="button" id="images">图片库</button>
+        <button type="button" id="size">难度: III</button>
+        <button type="button" id="ai">AI 完成</button>
+        <button type="button" id="about">关于</button>
       </div>
     </div>
-    <div id="barrier">
+    <div id="barrier" class="half-trans">
       <div id="ai-window" class="window">
-        <div class="bg"></div>
         <img id="state" class="window-img" src="./imgs/icons/processing.png" />
         <p id="message">计算中，请稍后……</p>
-        <button type="button" id="recover" class="window-btn">
-          <div class="bg"></div>
-          复原
-        </button>
-        <button type="button" id="cancel" class="window-btn">
-          <div class="bg"></div>
-          取消
-        </button>
+        <button type="button" id="recover" class="window-btn">复原</button>
+        <button type="button" id="cancel" class="window-btn">取消</button>
       </div>
       <div id="success" class="window">
-        <div class="bg"></div>
         <img class="window-img" src="./imgs/icons/success.png" />
-        <button type="button" id="success-close">
-          <img src="./imgs/icons/x.png" />
-        </button>
+        <button type="button" id="success-close" class="window-btn">关闭</button>
       </div>
     </div>
     <div id="gallery" class="close">
-      <h1>GALLERY</h1>
+      <h1>GALLERY o(*////▽////*)q</h1>
       <ul class="folders">
         <li>
           <h2>基础</h2>
@@ -90,9 +83,19 @@
           </div>
         </li>
       </ul>
-      <button type="button" id="gallery-close">
-        <img src="./imgs/icons/close.svg" />
-      </button>
+      <button type="button" id="gallery-close">关闭</button>
+    </div>
+    <div id="about-win" class="close">
+      <h1>About / 关于 / (≧∀≦)ゞ</h1>
+      <h2>Based on Github Pages</h2>
+      <p><a href="https://github.com/snow-cube/snow-cube.github.io/" target="_blank">Github Repository</a></p>
+      <h2>开发</h2>
+      <p>Snow Cube 雪块</p>
+      <h2>图片来源</h2>
+      <p>
+        <a href="https://space.bilibili.com/1373037/" target="_blank">bilibili @QuAn___</a>
+      </p>
+      <button type="button" id="about-close">关闭</button>
     </div>
     <script src="scripts/main.js"></script>
   </body>

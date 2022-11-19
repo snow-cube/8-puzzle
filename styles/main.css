@@ -3,6 +3,10 @@
   color: white;
 }
 
+body {
+  background-color: white;
+}
+
 #main-area {
   position: fixed;
   margin: 0;
@@ -16,7 +20,7 @@
   width: 700px;
   height: 510px;
 
-  background-color: gainsboro;
+  /* background-color: gainsboro; */
 }
 
 #puzzle {
@@ -28,7 +32,8 @@
   margin: 0;
   width: 510px;
   height: 510px;
-  background-color: aliceblue;
+  background-color: #f9f9f9;
+  outline:#f9f9f9 solid 15px;
 }
 
 .piece {
@@ -37,7 +42,7 @@
   height: 170px;
   margin: 0;
   padding: 0;
-  background-color: violet;
+  background-color: #eee;
   background-size: 510px;
   /* border-style: solid; */
   /* border-color: white; */
@@ -49,7 +54,7 @@
 }
 
 #idx0 {
-  background-color: aliceblue;
+  background-color: white;
   transition-property: none;
   transition-duration: 0;
   z-index: 1;
@@ -62,8 +67,30 @@
   transform: translate(0, -50%);
   margin: 0;
   width: 190px;
-  height: 10em;
-  background-color: coral;
+  /* height: 10em; */
+  /* background-color: coral; */
+}
+
+#controller button {
+  padding: 10px 0;
+  text-align: center;
+  margin: 7px 20px;
+  border: none;
+  /* height: 42px; */
+  width: 130px;
+  font-size: 16px;
+  font-weight:lighter;
+  box-shadow: 5px 5px #cacaca;
+  background-color: rgba(255,130,169,1);
+}
+
+#controller button:hover {
+  background-color: rgba(240,115,150,1);
+  cursor: pointer;
+}
+
+#controller button:active {
+  box-shadow: 2px 2px #cacaca;
 }
 
 #barrier {
@@ -71,34 +98,32 @@
   position: fixed;
   width: 100%;
   height: 100%;
+}
+
+.half-trans {
   background-color: rgba(255,255,255,0.8);
+}
+
+.trans {
+  background-color: transparent;
 }
 
 .window {
   position: absolute;
   margin: 0;
-  padding-top: 25px;
-  padding-bottom: 15px;
+  padding: 25px 0;
+  /* padding-top: 25px; */
+  /* padding-bottom: 15px; */
   /* top: calc(50% - 255px); */
   /* left: calc(50% - 350px); */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 650px;
+  background-color: rgba(255,130,169,1);
+  box-shadow: 8px 8px #cacaca;
 
   /* height: 100px; */
-}
-
-.bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transform: skewX(18deg);
-  background-color: blueviolet;
-
-  z-index: -1;
 }
 
 .window-img {
@@ -112,55 +137,55 @@
   display: block;
   position: absolute;
   bottom: -60px;
-  padding: 0;
+  padding: 10px 0;
   border: none;
-  background: none;
+  /* background: none; */
+  background-color: rgba(255,130,169,1);
+  box-shadow: 5px 5px #cacaca;
 
   width: 120px;
-  height: 50px;
+  /* height: 50px; */
 
   font-weight: bold;
-  font-size: 1.2em;
+  font-size: 18px;
+}
+
+.window-btn:hover {
+  background-color: rgba(240,115,150,1);
+  cursor: pointer;
+}
+
+.window-btn:active {
+  box-shadow: 2px 2px #cacaca;
 }
 
 #recover {
   left: 170px;
+  display: none;
 }
 
 #cancel {
   right: 170px;
-}
-
-#message {
-  text-align: center;
-  font-size: 1.1em;
-  font-weight: bold;
-}
-
-#ai-window {
-  /* display: none; */
-}
-
-#success {
   display: none;
 }
 
 #success-close {
-  display: block;
-  /* position: absolute; */
-  margin: 0 auto;
-  /* bottom: 20px; */
-  padding: 0;
-  border: none;
-  background: none;
-  /* width: 80px; */
-  height: 80px;
+  left: 50%;
+  transform: translate(-50%, 0);
 }
 
-#success-close img {
-  display: block;
-  /* position: absolute; */
-  height: 80px;
+#message {
+  text-align: center;
+  font-size: 17px;
+  /* font-weight: bold; */
+}
+
+#ai-window {
+  display: none;
+}
+
+#success {
+  display: none;
 }
 
 #gallery {
@@ -171,22 +196,26 @@
   left: 50%;
   transform: translate(-50%, -50%);
   padding: 30px;
-  background-color: yellowgreen;
+  background-color: #eeecec;
+  box-shadow: 10px 10px #cacaca;
 }
 
-h1 {
-  font-size: 2em;
+#gallery h1 {
+  font-size: 30px;
   margin-top: 0;
   margin-bottom: 15px;
+  color: rgb(255, 78, 134);
 }
 
-h2 {
-  display: inline;
-  font-size: 1em;
+#gallery h2 {
+  /* display: inline; */
+  font-size: 18px;
+  margin: 10px;
+  color: rgb(255, 78, 134);
 }
 
 .folders {
-  list-style: square inside url("../imgs/icons/r.svg");
+  /* list-style: square inside url("../imgs/icons/r.svg"); */
   margin: 0;
   padding: 0;
   height: 90%;
@@ -199,23 +228,103 @@ h2 {
   margin: 15px 8px;
   width: 130px;
   /* height: 150px; */
+  outline: rgb(247, 247, 247) solid 7px;
+  cursor: pointer;
 }
 
 #gallery-close {
   position: absolute;
   top: 20px;
   right: 30px;
-  padding: 0;
-  /* width: 40px; */
-  /* height: 40px; */
+  padding: 10px 0;
   border: none;
-  background-color: blueviolet;
+  background-color: rgba(255,130,169,1);
+  box-shadow: 5px 5px #cacaca;
+
+  width: 70px;
+
+  font-weight: bold;
+  font-size: 18px;
 }
 
-#gallery-close img {
-  display: block;
-  margin: 10px;
-  width: 20px;
+#gallery-close:hover {
+  background-color: rgba(240,115,150,1);
+  cursor: pointer;
+}
+
+#gallery-close:active {
+  box-shadow: 2px 2px #cacaca;
+}
+
+#about-win {
+  position: fixed;
+  width: 300px;
+  height: 350px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 30px;
+  background-color: rgba(255,130,169,1);
+  box-shadow: 7px 7px #cacaca;
+}
+
+#about-win * {
+  color: white;
+}
+
+#about-win h1 {
+  font-size: 23px;
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+#about-win h2 {
+  /* display: inline; */
+  font-size: 17px;
+  /* margin: 10px; */
+}
+
+#about-win p {
+  font-size: 15px;
+  font-weight: lighter;
+}
+
+#about-win a:link, a:visited {
+  background-color: rgb(255, 149, 183);
+  color: white;
+  padding: 8px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+  
+#about-win a:hover, a:active {
+  background-color: rgb(249, 158, 186);
+}
+
+#about-close {
+  position: absolute;
+  top: 20px;
+  right: 15px;
+  padding: 10px 0;
+  border: none;
+  background-color: white;
+  color: rgb(255, 78, 134);
+  box-shadow: 5px 5px #cacaca;
+
+  width: 60px;
+
+  font-weight: bold;
+  font-size: 16px;
+}
+
+#about-close:hover {
+  background-color: #eee;
+  cursor: pointer;
+}
+
+#about-close:active {
+  box-shadow: 3px 3px #cacaca;
 }
 
 .close {
@@ -223,7 +332,7 @@ h2 {
 }
 
 /* 响应式布局 - 当屏幕的宽度小于 800 像素时，使两列堆叠而不是并排 */
-@media screen and (max-width: 719px) {
+@media screen and (max-width: 750px) {
   #main-area {
     width: 510px;
     height: 720px;
@@ -246,7 +355,7 @@ h2 {
     transform: translate(-50%, 0);
     width: 190px;
     height: 210px;
-    background-color: coral;
+    /* background-color: coral; */
   }
 }
 

@@ -66,11 +66,13 @@ function generate(sequence, left, range) {
 
 // Basic game object, which store kinds of info of game
 var game = {
-    size: 4, // size * size puzzle
+    finished: false,
+
+    size: 3, // size * size puzzle
     pcsSize: 0, // Pixel size of single piece
 
-    defaultImg: "./imgs/images/d4.png",
-    currentImg: "./imgs/images/d4.png",
+    defaultImg: "./imgs/images/d3.png",
+    currentImg: "./imgs/images/d3.png",
 
     puzzle: {}, // element
     pieces: [], // Store objests, which have elem properties
@@ -79,13 +81,18 @@ var game = {
     // Some preparation works, including clean old pieces, create new ones
     // Called when creating new game, restarting and change pictures...
     prepareGame: function() {
+        this.finished = false;
         // Clean old ones
-        for (var i = 0; i < this.pieces.length; i++) {
-            for (var j = 0; j < this.pieces.length; j++) {
-                document.removeChild(this.pieces[i][j]);
-                this.pieces[i][j] = null;
+        if (this.pieces.length) {
+            for (var i = 0; i < this.pieces.length; i++) {
+                for (var j = 0; j < this.pieces[i].length; j++) {
+                    this.puzzle.removeChild(this.pieces[i][j].elem);
+                    this.pieces[i][j].elem = null;
+                    this.pieces[i][j] = null;
+                }
             }
         }
+        
         this.pieces.length = 0;
         this.sequence.length = 0;
 
@@ -174,10 +181,11 @@ var game = {
 
     isSuccessful: function() {
         for (var i = 0; i < this.size * this.size - 1; i++) {
-            if (self.sequence[i] !== i + 1) {
+            if (this.sequence[i] !== i + 1) {
                 return false;
             }
         }
+        this.finished = true;
         return true;
     }
 };
@@ -214,6 +222,9 @@ Piece.prototype = {
 };
 
 var moveHandler = function() {
+    if (game.finished) {
+        return;
+    }
     var currIdx = parseInt(this.id.slice(3));
     if (currIdx) { // Not blank
         var currPos = locateNum(currIdx, game.sequence, game.size);
@@ -227,7 +238,23 @@ var moveHandler = function() {
             game.sequence[blankPos.x*game.size + blankPos.y] = currIdx;
         }
     }
-
+    if (game.isSuccessful()) {
+        var barrier = document.getElementById("barrier");
+        
+        barrier.classList.remove("half-trans");
+        barrier.classList.add("trans");
+        barrier.style.display = "block";
+        setTimeout(function() {
+            var idx0 = document.getElementById("idx0");
+            idx0.style.backgroundImage = `url('${game.currentImg}')`;
+        }, 300);
+        setTimeout(function() {
+            var succWin = document.getElementById("success");
+            succWin.style.display = "block";
+            barrier.classList.add("half-trans");
+            barrier.classList.remove("trans");
+        }, 1000);
+    }
 };
 
 var ai = {
@@ -326,42 +353,83 @@ var ai = {
 };
 
 var AISovleHandler = function() {
-    var start = new Date();
-    ai.sovle(game.size);
-    var end = new Date();
-    console.log("---- AI Solving ----");
-    console.log(`Steps: ${ai.his}`);
-    console.log(`Start time: ${start.toLocaleTimeString()}`);
-    console.log(`End time: ${end.toLocaleTimeString()}`);
-    console.log(`${end - start}ms used`);
-    console.log("--------------------");
+    var barrier = document.getElementById("barrier");
+    var wd = document.getElementById("ai-window");
+    barrier.style.display = "block";
+    wd.style.display = "block";
+    var cancel = document.getElementById("cancel");
+    cancel.style.display = "none";
+    var recover = document.getElementById("recover");
+    recover.style.display = "none";
+    var message = document.getElementById("message");
+    message.firstChild.nodeValue = "计算中，请稍后……=￣ω￣=";
+    var stateImg = document.getElementById("state");
+    stateImg.setAttribute("src", "./imgs/icons/processing.png");
 
-    if (ai.ans === 0) {
-        console.log("Already Finished!");
-    } else if (ai.ans === 1000) {
-        console.log(`More than ${ai.max} steps!`);
-    } else {
-        // console.log(ai.his);
-        var callCnt = 0, times = ai.ans;
-        var callStep = () => {
-            if (callCnt < times) {
-                var pos1 = locateNum(0, game.sequence, game.size);
-                var pos2 = {};
-                pos2.x = pos1.x + ai.dir[ai.his[callCnt]][0];
-                pos2.y = pos1.y + ai.dir[ai.his[callCnt]][1];
-                game.swapTwo(pos1, pos2);
-                var t = game.sequence[pos2.x*game.size + pos2.y];
-                game.sequence[pos1.x*game.size + pos1.y] = t;
-                game.sequence[pos2.x*game.size + pos2.y] = 0;
-                callCnt++;
-                setTimeout(callStep, 500);
-            } else {
-                var idx0 = document.getElementById("idx0");
-                idx0.style.backgroundImage = `url('${game.currentImg}')`;
-            }
-        };
-        setTimeout(callStep, 500);
-    }
+    setTimeout(function() {
+        var start = new Date();
+        ai.sovle(game.size);
+        var end = new Date();
+        console.log("---- AI Solving ----");
+        console.log(`Steps: ${ai.his}`);
+        console.log(`Start time: ${start.toLocaleTimeString()}`);
+        console.log(`End time: ${end.toLocaleTimeString()}`);
+        console.log(`${end - start}ms used`);
+        console.log("--------------------");
+    
+        if (ai.ans === 0) {
+            console.log("Already Finished!");
+            stateImg.setAttribute("src", "./imgs/icons/oops.png");
+            message.firstChild.nodeValue = "不可复原已经完成的游戏！╮（╯＿╰）╭";
+            cancel.style.display = "block";
+        } else if (ai.ans === 1000) {
+            console.log(`More than ${ai.max} steps!`);
+            stateImg.setAttribute("src", "./imgs/icons/oops.png");
+            message.firstChild.nodeValue = "糟糕！无法在60步以内完成游戏。≧ ﹏ ≦";
+            cancel.style.display = "block";
+        } else {
+            // console.log(ai.his);
+            stateImg.setAttribute("src", "./imgs/icons/done.png");
+            message.firstChild.nodeValue = `计算完成！共需${ai.ans}步。(/≧▽≦)/`;
+            cancel.style.display = "block";
+            recover.style.display = "block";     
+        }
+    }, 500);
+};
+
+var recoverHandler = function() {
+    var barrier = document.getElementById("barrier");
+    var wd = document.getElementById("ai-window");
+    barrier.classList.remove("half-trans");
+    barrier.classList.add("trans");
+    wd.style.display = "none";
+
+    var callCnt = 0, times = ai.ans;
+    var callStep = () => {
+        if (callCnt < times) {
+            var pos1 = locateNum(0, game.sequence, game.size);
+            var pos2 = {};
+            pos2.x = pos1.x + ai.dir[ai.his[callCnt]][0];
+            pos2.y = pos1.y + ai.dir[ai.his[callCnt]][1];
+            game.swapTwo(pos1, pos2);
+            var t = game.sequence[pos2.x*game.size + pos2.y];
+            game.sequence[pos1.x*game.size + pos1.y] = t;
+            game.sequence[pos2.x*game.size + pos2.y] = 0;
+            callCnt++;
+            setTimeout(callStep, 500);
+        } else {
+            var idx0 = document.getElementById("idx0");
+            idx0.style.backgroundImage = `url('${game.currentImg}')`;
+
+            var barrier = document.getElementById("barrier");
+            barrier.style.display = "none";
+            barrier.classList.remove("trans");
+            barrier.classList.add("half-trans");
+
+            game.finished = true;
+        }
+    };
+    setTimeout(callStep, 500);
 };
 
 window.addEventListener("load", function() {
@@ -369,9 +437,65 @@ window.addEventListener("load", function() {
 
     game.prepareGame();
 
+    // New game part
+    var btnNew = this.document.getElementById("new");
+    btnNew.addEventListener("click", function() {
+        game.prepareGame();
+    }, false);
+
+    // Size part
+    var btnSize = this.document.getElementById("size");
+    btnSize.addEventListener("click", function() {
+        game.size -= 2;
+        game.size %= 3;
+        game.size += 3;
+
+        var dUrl = `./imgs/images/d${game.size}.png`;
+        if (game.defaultImg === game.currentImg) {
+            game.defaultImg = dUrl;
+            game.currentImg = dUrl;
+        } else {
+            game.defaultImg = dUrl;
+        }
+        game.prepareGame();
+
+        var dImgElem = document.getElementById("default");
+        dImgElem.setAttribute("src", dUrl);
+
+        var text;
+        switch (game.size) {
+            case 3: text = "难度: III"; break;
+            case 4: text = "难度: IV"; break;
+            case 5: text = "难度: V"; break;
+        }
+        this.firstChild.nodeValue = text;
+    }, false);
+
+    // AI part
     var btnAI = this.document.getElementById("ai");
     btnAI.addEventListener("click", AISovleHandler, false);
 
+    var btnRecover = this.document.getElementById("recover");
+    btnRecover.addEventListener("click", recoverHandler, false);
+
+    var btnCancel = this.document.getElementById("cancel");
+    btnCancel.addEventListener("click", function() {
+        var barrier = document.getElementById("barrier");
+        var wd = document.getElementById("ai-window");
+        barrier.style.display = "none";
+        wd.style.display = "none";
+    }, false);
+
+    // Success part
+    var successClose = this.document.getElementById("success-close");
+    successClose.addEventListener("click", function() {
+        var barrier = document.getElementById("barrier");
+        var succWin = document.getElementById("success");
+        barrier.style.display = "none";
+        succWin.style.display = "none";
+    }, false);
+
+    // Gallery part
     var gOpen = this.document.getElementById("images");
     gOpen.addEventListener("click", function() {
         var gallery = document.getElementById("gallery");
@@ -383,6 +507,24 @@ window.addEventListener("load", function() {
         this.parentNode.classList.add("close");
     }, false);
 
+    // About part
+    var aboutOpen = this.document.getElementById("about");
+    aboutOpen.addEventListener("click", function() {
+        var barrier = document.getElementById("barrier");
+        barrier.style.display = "block";
+        var about = document.getElementById("about-win");
+        about.classList.remove("close");
+    }, false);
+
+    var aboutClose = this.document.getElementById("about-close");
+    aboutClose.addEventListener("click", function() {
+        var barrier = document.getElementById("barrier");
+        barrier.style.display = "none";
+        var about = document.getElementById("about-win");
+        about.classList.add("close");
+    }, false);
+
+    // Imgs movement part
     var imgs = this.document.getElementsByClassName("img-items");
     for (var i = 0; i < imgs.length; i++) {
         imgs[i].addEventListener("click", function() {
