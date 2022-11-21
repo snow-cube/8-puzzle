@@ -10,24 +10,16 @@ body {
 #main-area {
   position: fixed;
   margin: 0;
-  /* top: 37px;
-  left: 27px; */
   top: calc(50% - 255px);
   left: calc(50% - 350px);
-  /* top: 50%; */
-  /* left: 50%; */
-  /* transform: translate(-50%, -50%); */
   width: 700px;
   height: 510px;
-
-  /* background-color: gainsboro; */
 }
 
 #puzzle {
   position: absolute;
   top: 0;
   right: 0;
-  /* transform: translate(0, -50%); */
 
   margin: 0;
   width: 510px;
@@ -44,9 +36,6 @@ body {
   padding: 0;
   background-color: #eee;
   background-size: 510px;
-  /* border-style: solid; */
-  /* border-color: white; */
-  /* border-width: 5px; */
   transition-property: top, left;
   transition-duration: 130ms;
   transition-timing-function: ease;
@@ -67,29 +56,26 @@ body {
   transform: translate(0, -50%);
   margin: 0;
   width: 190px;
-  /* height: 10em; */
-  /* background-color: coral; */
 }
 
-#controller button {
+.ctrl-btn {
   padding: 10px 0;
   text-align: center;
   margin: 7px 20px;
   border: none;
-  /* height: 42px; */
   width: 130px;
   font-size: 16px;
-  font-weight:lighter;
+  font-weight: normal;
   box-shadow: 5px 5px #cacaca;
   background-color: rgba(255,130,169,1);
 }
 
-#controller button:hover {
+.ctrl-btn:hover {
   background-color: rgba(240,115,150,1);
   cursor: pointer;
 }
 
-#controller button:active {
+.ctrl-btn:active {
   box-shadow: 2px 2px #cacaca;
 }
 
@@ -112,23 +98,16 @@ body {
   position: absolute;
   margin: 0;
   padding: 25px 0;
-  /* padding-top: 25px; */
-  /* padding-bottom: 15px; */
-  /* top: calc(50% - 255px); */
-  /* left: calc(50% - 350px); */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 650px;
   background-color: rgba(255,130,169,1);
   box-shadow: 8px 8px #cacaca;
-
-  /* height: 100px; */
 }
 
 .window-img {
   display: block;
-  /* text-align: center; */
   margin: 0 auto;
   height: 96px;
 }
@@ -139,12 +118,10 @@ body {
   bottom: -60px;
   padding: 10px 0;
   border: none;
-  /* background: none; */
   background-color: rgba(255,130,169,1);
   box-shadow: 5px 5px #cacaca;
 
   width: 120px;
-  /* height: 50px; */
 
   font-weight: bold;
   font-size: 18px;
@@ -177,7 +154,6 @@ body {
 #message {
   text-align: center;
   font-size: 17px;
-  /* font-weight: bold; */
 }
 
 #ai-window {
@@ -208,14 +184,12 @@ body {
 }
 
 #gallery h2 {
-  /* display: inline; */
   font-size: 18px;
   margin: 10px;
   color: rgb(255, 78, 134);
 }
 
 .folders {
-  /* list-style: square inside url("../imgs/icons/r.svg"); */
   margin: 0;
   padding: 0;
   height: 90%;
@@ -224,10 +198,8 @@ body {
 
 .img-items {
   display: inline-block;
-  /* float: left; */
   margin: 15px 8px;
   width: 130px;
-  /* height: 150px; */
   outline: rgb(247, 247, 247) solid 7px;
   cursor: pointer;
 }
@@ -279,14 +251,12 @@ body {
 }
 
 #about-win h2 {
-  /* display: inline; */
   font-size: 17px;
-  /* margin: 10px; */
 }
 
 #about-win p {
   font-size: 15px;
-  font-weight: lighter;
+  font-weight: normal;
 }
 
 #about-win a:link, a:visited {
@@ -331,52 +301,194 @@ body {
   display: none;
 }
 
-/* 响应式布局 - 当屏幕的宽度小于 800 像素时，使两列堆叠而不是并排 */
+
 @media screen and (max-width: 750px) {
   #main-area {
     width: 510px;
-    height: 720px;
-    top: calc(50% - 360px);
+    height: 640px;
+    top: calc(50% - 320px);
     left: calc(50% - 255px);
   }
   
   #puzzle {
-    /* left: 50%; */
     left: 0;
     bottom: 0;
     top: auto;
     right: auto;
-    /* transform: translate(-50%, 0); */
   }
 
   #controller {
-    top: 0;
+    width: 400px;
+    height: auto;
     left: 50%;
+    bottom: auto;
+    top: 0;
+    right: auto;
     transform: translate(-50%, 0);
-    width: 190px;
-    height: 210px;
-    /* background-color: coral; */
+  }
+
+  .ctrl-btn {
+    float: left;
+    margin: 7px 10px;
+    width: 120px;
+  }
+  
+  .ctrl-btn:hover {
+    background-color: rgba(255,130,169,1);
+  }
+
+  #new {
+    width: 220px;
+  }
+
+  #images {
+    width: 140px;
+  }
+
+  #size {
+    width: 120px;
+  }
+
+  #ai {
+    width: 140px;
+  }
+
+  #about {
+    width: 80px;
+  }
+
+  .window {
+    padding-top: 30px;
+    padding-bottom: 10px;
+    width: 450px;
+  }
+  
+  .window-img {
+    height: 72px;
+  }
+  
+  .window-btn:hover {
+    background-color: rgba(255,130,169,1);
+  }
+
+  #recover {
+    left: 80px;
+  }
+  
+  #cancel {
+    right: 80px;
+  }
+
+  #message {
+    padding: 0 25px;
+  }
+  
+  #gallery {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+  }
+  
+  #gallery h1 {
+    margin: 20px 15px;
+  }
+  
+  .folders {
+    margin: 0 15px;
+  }
+  
+  #gallery-close {
+    width: 60px;
+    font-size: 15px;
+  }
+  
+  #gallery-close:hover {
+    background-color: rgba(255,130,169,1);
+  }
+  
+  #about-win {
+    width: 290px;
+    padding: 20px;
+  }
+  
+  #about-close {
+    top: 13px;
+    right: 12px;
+  }
+  
+  #about-close:hover {
+    background-color: white;
   }
 }
 
-@media screen and (max-width: 540px) {
+@media screen and (max-width: 550px) {
   #main-area {
-    width: 300px;
+    width: 330px;
     height: 510px;
     top: calc(50% - 255px);
-    left: calc(50% - 150px);
+    left: calc(50% - 165px);
   }
   
   #puzzle {
-    width: 300px;
-    height: 300px;
+    width: 330px;
+    height: 330px;
+    outline:#f9f9f9 solid 12px;
   }
 
   .piece {
-    background-size: 300px;
+    background-size: 330px;
   }
 
   #controller {
-    width: 190px;
+    width: 280px;
+  }
+
+  #new {
+    width: 260px;
+  }
+
+  #images {
+    width: 100px;
+  }
+
+  #size {
+    width: 140px;
+  }
+
+  #ai {
+    width: 160px;
+  }
+
+  #about {
+    width: 80px;
+  }
+
+  .window {
+    width: 300px;
+  }
+  
+  .window-img {
+    height: 56px;
+  }
+
+  #recover {
+    left: 10px;
+  }
+  
+  #cancel {
+    right: 10px;
+  }
+  
+  #gallery h1 {
+    font-size: 25px;
+  }
+  
+  .img-items {
+    width: 90px;
+  }
+
+  #gallery-close {
+    top: 15px;
+    right: 15px;
   }
 }

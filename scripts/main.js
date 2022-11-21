@@ -121,7 +121,6 @@ var game = {
     // Set or Update all the background images
     setImages: function() {
         var url = `url('${this.currentImg}')`;
-        // var url = `url(${this.imageDir}${this.imageList[code]})`;
         for (var i = 0; i < this.size; i++) {
             for (var j = 0; j < this.size; j++) {
                 var piece = this.pieces[i][j];
@@ -136,10 +135,6 @@ var game = {
                 }
                 elem.style.backgroundPositionX = -pos.y*this.pcsSize + "px";
                 elem.style.backgroundPositionY = -pos.x*this.pcsSize + "px";
-
-                // if (piece.idx === 0) {
-                    // elem.style.backgroundImage = "none";
-                // }
             }
         }
     },
@@ -204,8 +199,6 @@ function Piece(idx, posX, posY, pcsSize) {
     this.elem.style.height = pcsSize + "px";
     this.elem.style.top = posX * pcsSize + "px";
     this.elem.style.left = posY * pcsSize + "px";
-    // var node = document.createTextNode(idx);
-    // this.elem.appendChild(node);
 
     this.elem.addEventListener("mousedown", moveHandler, false);
 
@@ -345,7 +338,6 @@ var ai = {
         }
 
         for (var i = sum; i <= this.max; i++) {
-            // console.log(i);
             this.dfs(x0, y0, sum, 0, i, 4);
             if (this.ans !== 1000) break;
         }
@@ -362,7 +354,7 @@ var AISovleHandler = function() {
     var recover = document.getElementById("recover");
     recover.style.display = "none";
     var message = document.getElementById("message");
-    message.firstChild.nodeValue = "计算中，请稍后……=￣ω￣=";
+    message.firstChild.nodeValue = "=￣ω￣= 计算中，请稍后……";
     var stateImg = document.getElementById("state");
     stateImg.setAttribute("src", "./imgs/icons/processing.png");
 
@@ -380,17 +372,16 @@ var AISovleHandler = function() {
         if (ai.ans === 0) {
             console.log("Already Finished!");
             stateImg.setAttribute("src", "./imgs/icons/oops.png");
-            message.firstChild.nodeValue = "不可复原已经完成的游戏！╮（╯＿╰）╭";
+            message.firstChild.nodeValue = "╮（╯＿╰）╭ 不可以复原已经完成的游戏！";
             cancel.style.display = "block";
         } else if (ai.ans === 1000) {
             console.log(`More than ${ai.max} steps!`);
             stateImg.setAttribute("src", "./imgs/icons/oops.png");
-            message.firstChild.nodeValue = "糟糕！无法在60步以内完成游戏。≧ ﹏ ≦";
+            message.firstChild.nodeValue = "≧ ﹏ ≦ 糟糕！无法在60步以内完成游戏。";
             cancel.style.display = "block";
         } else {
-            // console.log(ai.his);
             stateImg.setAttribute("src", "./imgs/icons/done.png");
-            message.firstChild.nodeValue = `计算完成！共需${ai.ans}步。(/≧▽≦)/`;
+            message.firstChild.nodeValue = `(/≧▽≦)/ 计算完成！共需${ai.ans}步。`;
             cancel.style.display = "block";
             recover.style.display = "block";     
         }
